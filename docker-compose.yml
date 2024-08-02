@@ -10,6 +10,8 @@ services:
     ports:
         #target port : container app run port 
       - 8000:8000
+    volumes:
+      - ./backend:/app
     networks:
       - app-network
 
@@ -23,6 +25,9 @@ services:
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     networks:
       - app-network
   
