@@ -60,7 +60,7 @@ jobs:
             
             cd /home/ubuntu/
             pwd
-            docker-compose up
+            docker-compose up -d
           EOF
             
           # docker run -d --name backend -p 8000:8000 ${{ secrets.ECR_REGISTRY }}/backend:latest
