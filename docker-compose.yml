@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  backend:
+    image: eks-backend-master:1.0
+    build: ./backend
+    restart: on-failure
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend:/app
+  frontend:
+    image: eks-frontend-master:1.0
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
