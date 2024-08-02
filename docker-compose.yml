@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   backend:
-    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-backend-${GIT_BRANCH}-latest
+    image: ${ECR_REGISTRY}:eks-backend-${GIT_BRANCH}-latest
     container_name: backend-container
     environment:
     # get this variable from .env file
@@ -14,7 +14,7 @@ services:
       - app-network
 
   frontend:
-    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-frontend-${GIT_BRANCH}-latest
+    image: ${ECR_REGISTRY}:eks-frontend-${GIT_BRANCH}-latest
     container_name: frontend-container
     ports:
       - "3000:3000"

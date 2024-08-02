@@ -24,8 +24,8 @@ app.add_middleware(
 
 @app.get("/api/hello")
 def home():
-    return {"Hello" : "Weorld"}
+    return {"Hello" : "WORLD"}
 
 @app.get("/api/sayname/{name}")
 def say(name: str):
-    return {"Hello" : name}
+    return {"Hello sayname" : name}
