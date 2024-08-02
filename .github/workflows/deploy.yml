@@ -49,20 +49,14 @@ jobs:
     needs: build_and_push
 
     steps:
+
       - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
 
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: SSH into EC2 and Deploy
         env:
@@ -73,11 +67,11 @@ jobs:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
 
         run: |
-          # echo "$EC2_SSH_KEY" > private_key && chmod 600 private_key          
+          echo "$EC2_SSH_KEY" > private_key && chmod 600 private_key          
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
-            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
-            docker rmi $ECR_REGISTRY:eks-backend-prod-latest
-            docker rmi $ECR_REGISTRY:eks-frontend-prod-latest
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+            # docker rmi $ECR_REGISTRY:eks-backend-prod-latest
+            # docker rmi $ECR_REGISTRY:eks-frontend-prod-latest
             docker pull $ECR_REGISTRY:eks-backend-prod-latest
             docker pull $ECR_REGISTRY:eks-frontend-prod-latest
             docker stop backend-container || true
