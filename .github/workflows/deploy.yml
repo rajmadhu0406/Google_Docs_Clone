@@ -47,24 +47,23 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
 
-          run: |
-            echo "${{ secrets.EC2_SSH_KEY }}" | base64 --decode > private_key
-            chmod 600 private_key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 --decode > private_key
+          chmod 600 private_key
+          
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+            docker pull $ECR_REGISTRY:eks-backend-prod-latest
+            docker pull $ECR_REGISTRY:eks-frontend-prod-latest
+            docker stop backend-container || true
+            docker rm backend-container || true
+            docker stop frontend-container || true
+            docker rm frontend-container || true
             
-            ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
-              aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
-              docker pull $ECR_REGISTRY:eks-backend-prod-latest
-              docker pull $ECR_REGISTRY:eks-frontend-prod-latest
-              docker stop backend-container || true
-              docker rm backend-container || true
-              docker stop frontend-container || true
-              docker rm frontend-container || true
-              
-              cd /home/ubuntu/
-              pwd
-              docker-compose up
-            EOF
-
+            cd /home/ubuntu/
+            pwd
+            docker-compose up
+          EOF
             
-            # docker run -d --name backend -p 8000:8000 ${{ secrets.ECR_REGISTRY }}/backend:latest
-            # docker run -d --name frontend -p 80:80 ${{ secrets.ECR_REGISTRY }}/frontend:latest
+          # docker run -d --name backend -p 8000:8000 ${{ secrets.ECR_REGISTRY }}/backend:latest
+          # docker run -d --name frontend -p 80:80 ${{ secrets.ECR_REGISTRY }}/frontend:latest
