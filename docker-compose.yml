@@ -8,6 +8,7 @@ services:
     build: ./backend
     restart: on-failure
     ports:
+        #target port : container app run port 
       - 8000:8000
     volumes:
       - ./backend:/app
