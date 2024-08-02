@@ -73,7 +73,7 @@ jobs:
             # docker rmi $ECR_REGISTRY:eks-backend-prod-latest
             # docker rmi $ECR_REGISTRY:eks-frontend-prod-latest
             docker pull 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-backend-prod-latest
-            docker pull $ECR_REGISTRY:eks-frontend-prod-latest
+            docker pull ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
             docker stop backend-container || true
             docker rm backend-container || true
             docker stop frontend-container || true
