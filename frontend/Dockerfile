@@ -11,12 +11,12 @@ COPY . /app
 
 RUN npm run build
 
-EXPOSE 80
+EXPOSE 3000
 
-# RUN npm install -g serve
-# CMD ["serve","-s","build","-l","80"]
+RUN npm install -g serve
+CMD ["serve","-s","build","-l","3000"]
 
-CMD ["npm","start"]
+# CMD ["npm","run","build"]
 
 
 

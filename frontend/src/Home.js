@@ -9,7 +9,7 @@ const Home = () => {
         try {
             // Make the API call using axios.get
             const name = "reactNameButton"
-            const response = await axios.get(`http://127.0.0.1:8000/sayname/${name}`);
+            const response = await axios.get(`/api/sayname/${name}`);
             console.log(response.data);
             // Save the result in state
             setResult(response.data);
