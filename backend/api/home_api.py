@@ -12,6 +12,6 @@ router = APIRouter(
 )
 
 
-@router.post('/test', status_code=status.HTTP_200_OK)
+@router.get('/test', status_code=status.HTTP_200_OK)
 def signup_user():
     return {"Home Test" : "Success"}
