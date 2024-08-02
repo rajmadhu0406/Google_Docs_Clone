@@ -27,11 +27,11 @@ jobs:
 
       - name: Build and Push Backend Docker Image
         run: |
-          docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest -f ./backend/Dockerfile ./backend --push .
+          docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest -f ./backend/Dockerfile --push ./backend
 
       - name: Build and Push Frontend Docker Image
         run: |
-          docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest -f ./frontend/Dockerfile ./frontend --push .
+          docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest -f ./frontend/Dockerfile --push ./frontend
 
   deploy:
     name: Deploy on EC2
