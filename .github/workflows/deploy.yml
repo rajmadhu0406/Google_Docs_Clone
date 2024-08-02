@@ -48,7 +48,7 @@ jobs:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
 
         run: |
-          echo "$key" > private_key && chmod 600 private_key          
+          echo "$EC2_SSH_KEY" > private_key && chmod 600 private_key          
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
             docker pull $ECR_REGISTRY:eks-backend-prod-latest
