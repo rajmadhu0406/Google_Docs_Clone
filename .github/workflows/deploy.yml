@@ -71,8 +71,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
             
-            docker pull ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest
-            docker pull ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
             docker stop backend-container || true
             docker rm backend-container || true
             docker stop frontend-container || true
@@ -80,6 +78,9 @@ jobs:
 
             docker rmi ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest
             docker rmi ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
+
+            docker pull ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest
+            docker pull ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
             
             cd /home/ubuntu/
             docker-compose up -d
