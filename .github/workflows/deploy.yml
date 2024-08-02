@@ -55,7 +55,9 @@ jobs:
             docker pull ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
             docker stop backend-container || true && docker rm backend-container || true
             docker stop frontend-container || true && docker rm frontend-container || true
+            
             cd home/ubuntu/
+            pwd
             docker-compose up
             
             # docker run -d --name backend -p 8000:8000 ${{ secrets.ECR_REGISTRY }}/backend:latest
