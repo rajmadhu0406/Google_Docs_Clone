@@ -27,6 +27,11 @@ jobs:
 
       - name: Build and Push Backend Docker Image
         run: |
+          aws ecr list-images --repository-name ${{ secrets.ECR_REGISTRY }} --query 'imageIds[*]' --output json > image-ids.json
+          cat image-ids.json | jq -c '.[]' | while read imageId; do
+            aws ecr batch-delete-image --repository-name ${{ secrets.ECR_REGISTRY }} --image-ids "$imageId"
+          done
+          rm image-ids.json
           docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest -f ./backend/Dockerfile --push ./backend
 
       - name: Build and Push Frontend Docker Image
@@ -51,6 +56,8 @@ jobs:
           echo "$EC2_SSH_KEY" > private_key && chmod 600 private_key          
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+            docker rmi $ECR_REGISTRY:eks-backend-prod-latest
+            docker rmi $ECR_REGISTRY:eks-frontend-prod-latest
             docker pull $ECR_REGISTRY:eks-backend-prod-latest
             docker pull $ECR_REGISTRY:eks-frontend-prod-latest
             docker stop backend-container || true
