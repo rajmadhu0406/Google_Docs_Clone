@@ -10,8 +10,6 @@ services:
     ports:
         #target port : container app run port 
       - 8000:8000
-    volumes:
-      - ./backend:/app
   frontend:
     image: eks-frontend-${GIT_BRANCH}:1.0
     build: ./frontend
@@ -22,6 +20,3 @@ services:
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
