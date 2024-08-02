@@ -1,0 +1,8 @@
+# Files to not include in docker image
+
+frontend\node_modules
+frontend\package-lock.json
+frontend\yarn.lock
+
+*.log
+*.git

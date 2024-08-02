@@ -1,27 +1,46 @@
 version: '3.8'
 services:
   backend:
-    image: eks-backend-${GIT_BRANCH}:1.0
+    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-backend-${GIT_BRANCH}-latest
+    container_name: backend-container
     environment:
     # get this variable from .env file
       - TEST_VARIABLE=${TEST_VARIABLE}
-    build: ./backend
     restart: on-failure
     ports:
         #target port : container app run port 
       - 8000:8000
-    volumes:
-      - ./backend:/app
+    networks:
+      - app-network
+
   frontend:
-    image: eks-frontend-${GIT_BRANCH}:1.0
-    build: ./frontend
+    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-frontend-${GIT_BRANCH}-latest
+    container_name: frontend-container
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - backend
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
+    networks:
+      - app-network
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    ports:
+      - "80:80"  # Expose port 80 for Nginx
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Mount your custom Nginx configuration file
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
+
