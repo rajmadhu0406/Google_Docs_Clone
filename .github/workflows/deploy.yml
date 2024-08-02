@@ -29,7 +29,7 @@ jobs:
 
       - name: Build Backend Docker Image
         run: |
-          docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest -f ./backend/Dockerfile ./backend
+          docker buildx build --tag ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest ./backend/Dockerfile 
           
       - name: Push Backend Docker Image
         run: |
@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Frontend Docker Image
         run: |
-          docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest -f ./frontend/Dockerfile ./frontend
+          docker buildx build -t ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest -f ./frontend/Dockerfile ./frontend
           
       - name: Push Frontend Docker Image
         run: |
