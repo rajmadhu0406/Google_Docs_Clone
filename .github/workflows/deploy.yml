@@ -24,14 +24,14 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-
-      - name: Build and Push Backend Docker Image
-        run: |
           aws ecr list-images --repository-name ${{ secrets.ECR_REGISTRY }} --query 'imageIds[*]' --output json > image-ids.json
           cat image-ids.json | jq -c '.[]' | while read imageId; do
             aws ecr batch-delete-image --repository-name ${{ secrets.ECR_REGISTRY }} --image-ids "$imageId"
           done
           rm image-ids.json
+
+      - name: Build and Push Backend Docker Image
+        run: |
           docker buildx build --platform linux/amd64 -t ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest -f ./backend/Dockerfile --push ./backend
 
       - name: Build and Push Frontend Docker Image
