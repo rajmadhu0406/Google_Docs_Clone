@@ -40,12 +40,16 @@ jobs:
 
     steps:
       - name: SSH into EC2 and Deploy
-        uses: appleboy/ssh-action@v0.1.2
-        with:
+        uses: actions/checkout@v3
+        env:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
+          run: |
+            echo "$key" > private_key && chmod 600 private_key
+            ssh -o StrictHostKeyChecking=no -i private_key ${username}@${host} '
+
+            
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
             docker pull ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest
             docker pull ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
