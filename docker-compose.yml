@@ -1,7 +1,10 @@
 version: '3.8'
 services:
   backend:
-    image: eks-backend-master:1.0
+    image: eks-backend-${GIT_BRANCH}:1.0
+    environment:
+    # get this variable from .env file
+      - TEST_VARIABLE=${TEST_VARIABLE}
     build: ./backend
     restart: on-failure
     ports:
@@ -9,7 +12,7 @@ services:
     volumes:
       - ./backend:/app
   frontend:
-    image: eks-frontend-master:1.0
+    image: eks-frontend-${GIT_BRANCH}:1.0
     build: ./frontend
     ports:
       - "80:80"
