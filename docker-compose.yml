@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   backend:
-    image: eks-backend-${GIT_BRANCH}:1.0
+    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-backend-${GIT_BRANCH}-latest
     environment:
     # get this variable from .env file
       - TEST_VARIABLE=${TEST_VARIABLE}
@@ -12,7 +12,7 @@ services:
     volumes:
       - ./backend:/app
   frontend:
-    image: eks-frontend-${GIT_BRANCH}:1.0
+    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-frontend-${GIT_BRANCH}-latest
     build: ./frontend
     ports:
       - "80:3000"
