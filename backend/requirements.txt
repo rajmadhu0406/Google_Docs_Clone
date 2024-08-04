@@ -18,6 +18,7 @@ tenacity
 cryptography
 typing_extensions
 pydantic[email]
+websockets
 
 #AWS
 boto3

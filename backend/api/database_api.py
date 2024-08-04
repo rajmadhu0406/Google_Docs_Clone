@@ -6,7 +6,8 @@ from fastapi import APIRouter, HTTPException
 import logging
 import os
 
-# Load environment variables from .env file
+# Load environment variables from .env file through docker-compose
+
 # AWS_ACCESS_KEY_ID=your-access-key-id
 # AWS_SECRET_ACCESS_KEY=your-secret-access-key
 # AWS_DEFAULT_REGION=your-region
