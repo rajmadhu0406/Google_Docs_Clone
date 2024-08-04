@@ -6,16 +6,18 @@ import TextEditor from './TextEditor';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        {/* Route Configuration */}
-        <Routes>
-          <Route path="/" element={<Home />} /> {/* Updated route path to '/' */}
-          <Route path="/test" element={<Test />} />
-          <Route path="/editor" element={<TextEditor />} />
-        </Routes>
-      </div>
-    </Router>
+    <body>
+      <Router>
+        <div className="App">
+          {/* Route Configuration */}
+          <Routes>
+            <Route path="/" element={<Home />} /> {/* Updated route path to '/' */}
+            <Route path="/test" element={<Test />} />
+            <Route path="/editor" element={<TextEditor />} />
+          </Routes>
+        </div>
+      </Router>
+    </body>
   );
 }
 

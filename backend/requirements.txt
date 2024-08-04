@@ -18,3 +18,7 @@ tenacity
 cryptography
 typing_extensions
 pydantic[email]
+
+#AWS
+boto3
+python-dotenv

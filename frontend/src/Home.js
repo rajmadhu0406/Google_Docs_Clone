@@ -1,11 +1,18 @@
 import React from 'react'
-import axios from 'axios';
-import { useState } from 'react';
+import "./Home.css"
+// import axios from 'axios';
+// import { useState } from 'react';
 
 const Home = () => {
-
     return(
-        <h1>HI</h1>
+        <html>
+            <body>
+                <div class="helloContainer">
+                    <h1>HI</h1>
+                </div>
+            </body>
+        </html>
+        
     );
 }
 
