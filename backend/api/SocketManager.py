@@ -29,8 +29,11 @@ class SocketManager:
             self.active_connections.update({documentId : document_connections})
 
 
-    # async def send_personal_message(self, message: str, websocket: WebSocket):
-    #     await websocket.send_text(message)
+    async def send_personal_message(self, websocket: WebSocket, message: str):
+        try:   
+            await websocket.send_text(message)
+        except Exception as e:
+            logger.error(f"Error sending message to connection: {e}")
 
 
     async def broadcast(self, websocket: WebSocket, documentId: str, message: str):
@@ -38,7 +41,6 @@ class SocketManager:
             for connection in self.active_connections.get(documentId):
                 if(connection == websocket):
                     continue
-                
                 try:   
                     await connection.send_text(message)
                 except Exception as e:

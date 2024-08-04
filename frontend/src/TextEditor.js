@@ -1,90 +1,167 @@
-import React, {useState, useCallback, useEffect} from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import Quill from "quill"
 import "quill/dist/quill.snow.css"
 import "./TextEditor.css"
+import { useParams } from 'react-router-dom'
+
 
 const TextEditor = () => {
 
 
-    const [websocket, setWebsocket] = useState();
+    const [websocket, setWebsocket] = useState(null);
     const [quill, setQuill] = useState();
-    // const [documentId, setDocumentId] = useState(null);
-    // setDocumentId("doc_id_test");
-
+    const { docId: document_id } = useParams()
+    console.log(document_id)
     //useEffect to make sure that the connection is established only once and the return function
     //handles the what to do in case of reload and when rendering is done again
     useEffect(() => {
-        
-        const ws = new WebSocket('ws://localhost:8000/api/socket/ws/${document_id}');
+
+        const ws = new WebSocket('ws://localhost:8000/api/socket/ws/' + document_id);
         setWebsocket(ws);
 
         return () => {
-            if(ws){
+            if (ws) {
                 ws.close();
             }
         }
 
     }, [])
 
+    useEffect(() => {
+
+        if (websocket == null || quill == null) return
+
+        // Function to send a message after ensuring the connection is open
+        const sendMessage = (message) => {
+            if (websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify(message));
+            } else {
+                console.warn("WebSocket not open. Ready state:", websocket.readyState);
+            }
+        };
+
+        // Handle WebSocket open event
+        const handleOpen = () => {
+            // Send message when the connection is open
+            const message = {
+                key: 'get-document',
+                value: document_id
+            };
+            sendMessage(message);
+        };
+
+        // Handle WebSocket message event
+        // websocket.onmessage = (event) => {
+        //     const message = event.data;
+        //     console.log("Message received from server:", message);
+
+        //     try {
+        //         const parsedMessage = JSON.parse(message);
+        //         if (parsedMessage.key === 'db-document' && parsedMessage.value != null) {
+        //             const doc = parsedMessage.value;
+        //             console.log("doc texxt : ", doc);
+        //             quill.setContents(doc);
+        //             quill.enable();
+        //         }
+        //     } catch (e) {
+        //         console.error("Error parsing message:", e);
+        //     }
+        // };
+
+        // Handle WebSocket open and error events
+        websocket.onopen = handleOpen;
+        websocket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        // Cleanup function to close the WebSocket connection
+        return () => {
+
+        };
+
+    }, [websocket, quill, document_id])
+
     //useEffect for executing function when text changes in quill
     useEffect(() => {
 
-        if(WebSocket == null || quill == null) return 
+        if (WebSocket == null || quill == null) return
 
         const handler = (delta, oldDelta, source) => {
             //make sure that the changes are done by the user and not by quill or the server
-            if(source !== 'user') return
-            
+            if (source !== 'user') return
+
             //send changes to server
-            if(websocket){
+            if (websocket) {
                 // Convert the delta object to a JSON string
                 const deltaJson = JSON.stringify(delta);
-                websocket.send(deltaJson)
+                const message = {
+                    key: 'changes-received',
+                    value: deltaJson
+                };
+                websocket.send(JSON.stringify(message))
             }
         }
 
         //run handler function on text change
         quill.on('text-change', handler);
-        
+
         //runs when the component is unmounted
         return () => {
-            quill.off('text-change', handler )
+            quill.off('text-change', handler)
         }
 
-        
+
     }, [websocket, quill])
 
 
     useEffect(() => {
 
-        if(WebSocket == null || quill == null) return 
+        if (WebSocket == null || quill == null) return
 
         const handler = (delta) => {
             quill.updateContents(delta);
         }
 
-        if(websocket){
+        if (websocket) {
             //update the document on text change by otheer user by calling handler when we receive delta from server
             websocket.onmessage = (event) => {
                 const message = event.data;
                 console.log("Message received from server:", message);
 
-                try {
-                    const parsedMessage = JSON.parse(message); // Parse the message if it's in JSON format
-                    handler(parsedMessage);
-                } catch (e) {
-                    console.error("Error parsing message:", e);
+                const parsedMessage = JSON.parse(message);
+
+                if (parsedMessage.key === 'update-document' && parsedMessage.value != null) {
+                    try {
+                        handler(JSON.parse(parsedMessage.value));
+                    } catch (e) {
+                        console.error("Error parsing message:", e);
+                    }
+                }
+
+                if (parsedMessage.key === 'db-document') {
+
+                    if(parsedMessage.value != null){
+                        const doc_text = JSON.parse(parsedMessage.value).Data;
+                        console.log("doc texxt : ", doc_text);
+                        quill.setContents(doc_text);
+                        quill.enable();
+                    }
+                    else{
+                        quill.setContents("");
+                        quill.enable();
+                    }
+                    
                 }
             }
         }
-        
-        
+
+
         //runs when the component is unmounted
         return () => {
             // if (websocket)  websocket.close();
         };
 
-        
+
     }, [websocket, quill])
 
 
@@ -100,14 +177,14 @@ const TextEditor = () => {
         [{ align: [] }],
         ["image", "blockquote", "code-block"],
         ["clean"],
-      ]     
-    
+    ]
+
     // The useCallback function is called from the div with class=container and that div is passed to the function as argument
     //this is done so that the function does not duplicate editors copies when we save some changes.
     const containerRef = useCallback((containerDiv) => {
 
-        if(containerDiv == null) return
-        
+        if (containerDiv == null) return
+
         containerDiv.innerHTML = "";
         const editor = document.createElement('div');
         containerDiv.append(editor);
@@ -118,22 +195,19 @@ const TextEditor = () => {
             modules: { toolbar: TOOLBAR_OPTIONS },
         });
 
+        q.disable();
+        q.setText('Loading...');
         setQuill(q)
 
         return () => {
             containerRef.innerHTML = "";
         }
-  
+
     }, [])
 
 
     return (
-        <html>
-            <body>
-                <div className="container" ref={containerRef} ></div>
-            </body>
-        </html>
-        //ddd
+        <div className="container" ref={containerRef} ></div>
     )
 }
 
