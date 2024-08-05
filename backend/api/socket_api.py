@@ -24,6 +24,9 @@ def signup_user():
 
 @router.websocket("/ws/{document_id}")
 async def websocket_endpoint(websocket: WebSocket, document_id: str):
+    
+    logger.debug("\n\nwebsocket is called!!!\n\n")
+    
     await socketManager.connect(websocket, document_id)
     
     logger.debug("\nsocket connection success with document id : " + document_id)

@@ -59,6 +59,8 @@ const TextEditor = () => {
         websocket.onopen = handleOpen;
         websocket.onerror = (error) => {
             console.error("WebSocket error:", error);
+            const ws = new WebSocket('ws://localhost:8000/api/socket/ws/' + document_id);
+            setWebsocket(ws);
         };
 
         // Cleanup function to close the WebSocket connection
@@ -103,9 +105,10 @@ const TextEditor = () => {
                     value: JSON.stringify(quill.getContents())
                 };
 
-                console.log("save changes request sent to server with data : ", message);
+                
                 
                 if(websocket.readyState === WebSocket.OPEN){
+                    console.log("save changes request sent to server with data : ", message);
                     websocket.send(JSON.stringify(message))
                 }
             }
