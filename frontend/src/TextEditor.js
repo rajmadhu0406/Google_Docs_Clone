@@ -59,7 +59,6 @@ const TextEditor = () => {
         websocket.onopen = handleOpen;
         websocket.onerror = (error) => {
             console.error("WebSocket error:", error);
-            websocket.close();
         };
 
         // Cleanup function to close the WebSocket connection
@@ -94,7 +93,7 @@ const TextEditor = () => {
         quill.on('text-change', handler);
 
         const interval = setInterval(() => {
-            if (websocket && websocket.readyState === WebSocket.OPEN) {
+            if (websocket) {
                 // Convert the delta object to a JSON string
                 const message = {
                     key: 'save-changes',
