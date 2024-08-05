@@ -70,7 +70,7 @@ jobs:
           echo "$EC2_SSH_KEY" > private_key && chmod 600 private_key         
 
           #copy the nginx.conf file to EC2 instance
-          scp -i private_key -o StrictHostKeyChecking=no ./nginx.conf ${EC2_USER}@${EC2_HOST}:/home/ubuntu/
+          scp -i private_key -o StrictHostKeyChecking=no nginx.conf ${EC2_USER}@${EC2_HOST}:/home/ubuntu/
 
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
             export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
