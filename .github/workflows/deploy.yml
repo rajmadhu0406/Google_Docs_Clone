@@ -78,10 +78,27 @@ jobs:
             docker pull ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest
             docker pull ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
             
-            docker stop backend-container || true
-            docker rm backend-container || true
-            docker stop frontend-container || true
-            docker rm frontend-container || true
+            # docker stop backend-container || true
+            # docker rm backend-container || true
+            # docker stop frontend-container || true
+            # docker rm frontend-container || true
+
+             # Check and stop/remove the backend container
+             
+            if [ "$(docker ps -a -q -f name=backend-container)" ]; then
+                docker stop backend-container
+                docker rm backend-container
+            else
+                echo "backend-container does not exist, skipping stop and remove."
+            fi
+          
+            # Check and stop/remove the frontend container
+            if [ "$(docker ps -a -q -f name=frontend-container)" ]; then
+                docker stop frontend-container
+                docker rm frontend-container
+            else
+                echo "frontend-container does not exist, skipping stop and remove."
+            fi
 
             # docker rmi ${{ secrets.ECR_REGISTRY }}:eks-backend-prod-latest
             # docker rmi ${{ secrets.ECR_REGISTRY }}:eks-frontend-prod-latest
