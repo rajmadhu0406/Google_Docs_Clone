@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, WebSocket, WebSocketDisconnect
 import logging
 from .SocketManager import SocketManager
 import json
-from .database_api import fetch_document_from_db 
+from .database_api import fetch_or_create_document_from_db, update_document_in_db 
 from schema.Document import Document
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ async def websocket_endpoint(websocket: WebSocket, document_id: str):
                 #send the document from database
                 logger.debug(f"get document request received for document id : {document_id}")
                 
-                doc = await (fetch_document_from_db(value))
+                doc = await (fetch_or_create_document_from_db(value))
                 logger.debug(type(doc))
                 document_json = doc#.json()
 
@@ -53,7 +53,7 @@ async def websocket_endpoint(websocket: WebSocket, document_id: str):
                 
                 await socketManager.send_personal_message(websocket, json.dumps(data_to_send))
                 
-            elif(key == 'changes-received'):
+            if(key == 'changes-received'):
                 
                 logger.debug(f"changes broadcast request received for document id : {document_id}")
 
@@ -63,6 +63,15 @@ async def websocket_endpoint(websocket: WebSocket, document_id: str):
                     "value": value
                 }
                 await socketManager.broadcast(websocket, document_id, json.dumps(data_to_send))
+            
+            if(key == 'save-changes'):
+                
+                logger.debug(f"Save changes request received for document id : {document_id}")
+
+                if(value != ""):
+                    await update_document_in_db(document_id, value)
+                
+
                 
                 
     except WebSocketDisconnect:

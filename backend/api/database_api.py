@@ -1,4 +1,4 @@
-from schema.Document import Document
+from schema.Document import Document, BaseModel, Optional
 import boto3
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
@@ -76,8 +76,27 @@ async def fetch_document_from_db(document_id: str):
     try:
         response = table.get_item(Key={'id': document_id})
         if 'Item' not in response:
-            logger.info(f"Document with ID {document_id} not found.")
+            logger.info(f"Document with ID {document_id} not found")
             return None
+        
+        document = Document(**response['Item'])  
+        return document.json()  
+    except ClientError as e:
+        logger.error(f"Error fetching document {document_id}: {e.response['Error']['Message']}")
+        raise
+
+async def fetch_or_create_document_from_db(document_id: str):
+    """Fetch document from DynamoDB by its ID."""
+    try:
+        response = table.get_item(Key={'id': document_id})
+        if 'Item' not in response:
+            logger.info(f"Document with ID {document_id} not found, so creating new one")
+            default_value = ""
+            doc_to_create = Document(id=document_id, Data=default_value);
+            await create_document(doc_to_create)
+            return doc_to_create.json()
+        
+        logger.info(f"Document with ID {document_id} found in Database\n")
         document = Document(**response['Item'])  
         return document.json()  
     except ClientError as e:
@@ -85,17 +104,66 @@ async def fetch_document_from_db(document_id: str):
         raise
 
 # Get a document by id
-@router.get("/documents/{document_id}")
+@router.get("/documents/get/{document_id}")
 async def get_document_api(document_id: str):
     """API endpoint to get a document by its ID."""
     try:
         document = await fetch_document_from_db(document_id)
         if document is None:
-            raise HTTPException(status_code=404, detail="Document not found")
+            raise Exception(status_code=404, detail="Document not found")
         return document
-    except ClientError as e:
-        logger.error(f"Client error while fetching document {document_id}: {e.response['Error']['Message']}")
-        raise HTTPException(status_code=500, detail="Failed to get document from database")
     except Exception as e:
         logger.error(f"Unexpected error while fetching document {document_id}: {str(e)}")
-        raise HTTPException(status_code=500, detail="An unexpected error occurred")
+        return {"Error" : "Document not found"}
+    
+    
+@router.get("/documents/getorcreate/{document_id}")
+async def get_or_create_document_api(document_id: str):
+    """API endpoint to get a document by its ID."""
+    try:
+        document = await fetch_or_create_document_from_db(document_id)
+        return document
+    except Exception as e:
+        logger.error(f"Unexpected error while fetching document {document_id}: {str(e)}")
+        return {"Error" : str(e)}
+    
+    
+    
+async def update_document_in_db(document_id: str, new_data: object):
+    """Update a document in DynamoDB by its ID."""
+    try:
+        # Update the document in DynamoDB
+        response = table.update_item(
+            Key={'id': document_id},
+            UpdateExpression="SET #data = :data",
+            ExpressionAttributeNames={"#data": "Data"},
+            ExpressionAttributeValues={":data": new_data},
+            ReturnValues="UPDATED_NEW"  # Returns the new values after the update
+        )
+        
+        updated_item = response.get('Attributes', {})
+        if not updated_item:
+            logger.warning(f"No document found with ID {document_id} to update")
+            return None
+
+        logger.info(f"Document with ID {document_id} updated successfully")
+        return updated_item
+    
+    except ClientError as e:
+        logger.error(f"Error updating document {document_id}: {e.response['Error']['Message']}")
+        
+        
+class UpdateRequest(BaseModel):
+    Data: Optional[object] = None
+      
+@router.put("/documents/{document_id}")
+async def update_document_api(document_id: str, update_request: UpdateRequest):
+    """API endpoint to update a document."""
+    if not update_request.Data:
+        raise HTTPException(status_code=400, detail="Data field is required")
+
+    updated_document = await update_document_in_db(document_id, update_request.Data)
+    if updated_document is None:
+        raise HTTPException(status_code=404, detail=f"Document with ID {document_id} not found")
+
+    return updated_document
