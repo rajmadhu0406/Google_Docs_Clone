@@ -20,7 +20,7 @@ const TextEditor = () => {
     //handles the what to do in case of reload and when rendering is done again
     useEffect(() => {
 
-        const ws = new WebSocket('ws://localhost/api/socket/ws/' + document_id);
+        const ws = new WebSocket('ws://localhost:8000/api/socket/ws/' + document_id);
         setWebsocket(ws);
 
         return () => {
@@ -59,8 +59,6 @@ const TextEditor = () => {
         websocket.onopen = handleOpen;
         websocket.onerror = (error) => {
             console.error("WebSocket error:", error);
-            const ws = new WebSocket('ws://localhost:8000/api/socket/ws/' + document_id);
-            setWebsocket(ws);
         };
 
         // Cleanup function to close the WebSocket connection
