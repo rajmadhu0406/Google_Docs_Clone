@@ -20,7 +20,7 @@ const TextEditor = () => {
     //handles the what to do in case of reload and when rendering is done again
     useEffect(() => {
 
-        const ws = new WebSocket('ws://localhost:8000/api/socket/ws/' + document_id);
+        const ws = new WebSocket('ws://localhost/api/socket/ws/' + document_id);
         setWebsocket(ws);
 
         return () => {
@@ -85,7 +85,10 @@ const TextEditor = () => {
                     key: 'changes-received',
                     value: deltaJson
                 };
-                websocket.send(JSON.stringify(message))
+                if(websocket.readyState === WebSocket.OPEN){
+                    websocket.send(JSON.stringify(message))
+                }
+                
             }
         }
 
@@ -101,7 +104,10 @@ const TextEditor = () => {
                 };
 
                 console.log("save changes request sent to server with data : ", message);
-                websocket.send(JSON.stringify(message))
+                
+                if(websocket.readyState === WebSocket.OPEN){
+                    websocket.send(JSON.stringify(message))
+                }
             }
         }, SAVE_INTERVAL_MS)
 

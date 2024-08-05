@@ -16,9 +16,9 @@ aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 region = os.getenv('AWS_DEFAULT_REGION')
 
-print(f"Region: {region}")
-print(f"aws_access_key_id: {aws_access_key_id}")
-print(f"aws_secret_access_key: {aws_secret_access_key}")
+# print(f"Region: {region}")
+# print(f"aws_access_key_id: {aws_access_key_id}")
+# print(f"aws_secret_access_key: {aws_secret_access_key}")
 
 
 logging.basicConfig(level=logging.INFO)
