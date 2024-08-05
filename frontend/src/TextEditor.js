@@ -59,6 +59,7 @@ const TextEditor = () => {
         websocket.onopen = handleOpen;
         websocket.onerror = (error) => {
             console.error("WebSocket error:", error);
+            websocket.close();
         };
 
         // Cleanup function to close the WebSocket connection
