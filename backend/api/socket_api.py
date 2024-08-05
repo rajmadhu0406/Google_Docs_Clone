@@ -71,9 +71,6 @@ async def websocket_endpoint(websocket: WebSocket, document_id: str):
                 if(value != ""):
                     await update_document_in_db(document_id, value)
                 
-
-                
-                
     except WebSocketDisconnect:
         socketManager.disconnect(websocket, document_id)
         

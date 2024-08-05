@@ -7,7 +7,7 @@ logger.setLevel(logging.DEBUG)
 
 class SocketManager:
     def __init__(self):
-        self.active_connections: list[WebSocket] = {}
+        self.active_connections = dict()
 
     async def connect(self, websocket: WebSocket, documentId: str):
         await websocket.accept()
