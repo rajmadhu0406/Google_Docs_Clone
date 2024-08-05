@@ -57,6 +57,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: copy file via ssh key
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "nginx.conf"
+          target: /home/ubuntu/
+
 
       - name: SSH into EC2 and Deploy
         env:
@@ -65,12 +74,11 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-
+        #copy the nginx.conf file to EC2 instance
+       
+          
         run: |
           echo "$EC2_SSH_KEY" > private_key && chmod 600 private_key         
-
-          #copy the nginx.conf file to EC2 instance
-          scp -i private_key -o StrictHostKeyChecking=no nginx.conf ${EC2_USER}@${EC2_HOST}:/home/ubuntu/
 
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} << 'EOF'
             export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
