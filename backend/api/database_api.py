@@ -83,7 +83,7 @@ async def fetch_document_from_db(document_id: str):
         return document.json()  
     except ClientError as e:
         logger.error(f"Error fetching document {document_id}: {e.response['Error']['Message']}")
-        raise
+        return {"error" : e.response['Error']['Message']}
 
 async def fetch_or_create_document_from_db(document_id: str):
     """Fetch document from DynamoDB by its ID."""
@@ -101,7 +101,7 @@ async def fetch_or_create_document_from_db(document_id: str):
         return document.json()  
     except ClientError as e:
         logger.error(f"Error fetching document {document_id}: {e.response['Error']['Message']}")
-        raise
+        return {"error" : e.response['Error']['Message']}
 
 # Get a document by id
 @router.get("/documents/get/{document_id}")
