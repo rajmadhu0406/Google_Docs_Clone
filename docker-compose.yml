@@ -1,7 +1,8 @@
 version: '3.8'
 services:
   backend:
-    image: ${ECR_REGISTRY}:eks-backend-${GIT_BRANCH}-latest
+    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-backend-${GIT_BRANCH}-latest
+    build: ./backend
     container_name: backend-container
     environment:
     # get this variable from .env file
@@ -12,11 +13,14 @@ services:
     ports:
         #target port : container app run port 
       - 8000:8000
+    volumes:
+      - ./backend:/app
     networks:
       - app-network
 
   frontend:
-    image: ${ECR_REGISTRY}:eks-frontend-${GIT_BRANCH}-latest
+    image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-frontend-${GIT_BRANCH}-latest
+    build: ./frontend
     container_name: frontend-container
     ports:
       - "3000:3000"
@@ -25,6 +29,9 @@ services:
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     networks:
       - app-network
   
