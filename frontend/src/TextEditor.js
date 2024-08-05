@@ -93,7 +93,7 @@ const TextEditor = () => {
         quill.on('text-change', handler);
 
         const interval = setInterval(() => {
-            if (websocket && ws.readyState === WebSocket.OPEN) {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
                 // Convert the delta object to a JSON string
                 const message = {
                     key: 'save-changes',
