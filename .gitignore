@@ -1,7 +1,8 @@
 frontend/node_modules
-raj-admin_accessKeys.csv
+.env
+raj-user-google-docs-clone_credentials.csv
 eks-setup-instance-1-key-pair.pem
-
 google-doc-clone-EC2-key.pem
 raj-user-google-docs-clone_accessKeys.csv
 raj-user-google-docs-clone_credentials.csv
+raj-admin_accessKeys.csv
