@@ -20,13 +20,13 @@ const TextEditor = () => {
     //handles the what to do in case of reload and when rendering is done again
     useEffect(() => {
 
-        const ws = new WebSocket('ws://localhost:8000/api/socket/ws/' + document_id);
+        const ws = new WebSocket('/api/socket/ws/' + document_id);
         setWebsocket(ws);
 
         return () => {
-            if (ws) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.close();
-            }
+            }        
         }
 
     }, [])
