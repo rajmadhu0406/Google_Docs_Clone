@@ -27,7 +27,7 @@ The application is deployed on an AWS EC2 instance. The CI/CD pipeline automatic
 
 # Demo
 
-Click [here](http://ec2-3-93-56-221.compute-1.amazonaws.com/editor/default) for demo.
+Click [here](http://ec2-54-236-89-70.compute-1.amazonaws.com/editor/default) for demo.
 
 # Contact
 For any questions or feedback, feel free to reach out:
