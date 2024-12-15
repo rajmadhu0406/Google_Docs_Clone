@@ -4,7 +4,7 @@ services:
     image: 992382699617.dkr.ecr.us-east-1.amazonaws.com/eks-setup:eks-backend-${GIT_BRANCH}-latest
     container_name: backend-container
     environment:
-    # get this variable from .env file
+    # get this variable from  .env file
       - TEST_VARIABLE=${TEST_VARIABLE}
     restart: on-failure
     ports:
