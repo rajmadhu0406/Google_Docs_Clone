@@ -4,7 +4,7 @@ services:
     image: ${ECR_REGISTRY}:eks-backend-${GIT_BRANCH}-latest
     container_name: backend-container
     environment:
-    # get this variable from .env file
+    # get this variable from  .env file
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
