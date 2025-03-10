@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - prod
+  schedule:
+    - cron: '0 0 * * 1'  # Every Monday at 00:00 UTC
 
 jobs:
   build_and_push:
